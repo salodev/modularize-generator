@@ -1,0 +1,5 @@
+<?php
+
+return [
+    // 'config-name' => env(MODULE_CONFIG_NAME, 'default-value'),
+];
