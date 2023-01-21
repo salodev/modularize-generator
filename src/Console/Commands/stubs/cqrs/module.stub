@@ -1,0 +1,26 @@
+<?php
+
+namespace {{namespace}};
+
+use Salodev\Modularize\Module;
+
+class {{name}}Module extends Module
+{
+    
+    public function bootApiRoutes() {
+        /**
+         * Routes for CQRS model
+         * 
+         * Http GET methods for QUERY responsability
+         */
+		$this->router()->get ('/list', [{{name}}Controller::class, 'list']);
+        $this->router()->get ('{id}/get', [{{name}}Controller::class, 'get']);
+        
+        /**
+         * Http POST methods for COMMAND responsability
+         */
+		$this->router()->post('/create', [{{name}}Controller::class, 'create']);
+		$this->router()->post('{id}/update', [{{name}}Controller::class, 'update']);
+		$this->router()->post('{id}/delete', [{{name}}Controller::class, 'delete']);
+	}
+}

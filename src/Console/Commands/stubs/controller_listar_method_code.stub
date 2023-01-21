@@ -1,0 +1,9 @@
+        $rs = __BUSINESS_CLASS_NAME__::__METHOD_NAME__(
+            __URI_PARAMS_LIST__
+            $request->get('page',      1),
+            $request->get('limit',    10),
+            $request->get('filtros',  []),
+            $request->get('ordenes',  [])
+        );
+        
+        return __RESOURCE_CLASS_NAME__::collection($rs);
