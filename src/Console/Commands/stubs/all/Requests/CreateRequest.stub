@@ -1,0 +1,16 @@
+<?php
+
+namespace {{namespace}}\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class CreateRequest extends FormRequest 
+{
+
+    public function rules()
+    {
+        return [
+
+        ];
+    }
+}

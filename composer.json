@@ -1,0 +1,31 @@
+{
+    "name": "salodev/modularize-generator",
+    "description": "Laravel Modules Generator",
+    "type": "library",
+    "require": {
+        "laravel/framework": "^8|^9",
+        "marcusball/case-helper": "0.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Salodev\\Modularize\\Generator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Salomón Córdova",
+            "email": "info@salomoncordova.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Salodev\\Modularize\\Generator\\ServiceProvider"
+            ]
+        }   
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "4.0.x-dev"
+    }
+}

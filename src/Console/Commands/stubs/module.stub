@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Salodev\Modularize\Module;
+
+class {{ class }} extends Module
+{
+    
+    public function bootApiRoutes() {
+        // $this->router()->get('', ApiController::get);
+    }
+    
+    public function bootWebRoutes() {
+        // $this->router()->get('', WebController::get);
+    }
+    
+    public function register() {
+        // $this->provide(SubModule::class);
+    }
+}
+
