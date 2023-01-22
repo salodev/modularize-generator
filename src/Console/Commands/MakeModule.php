@@ -9,7 +9,7 @@ use Salodev\Modularize\Generator\ModuleCodeInjector;
 
 class MakeModule extends Command
 {
-    protected $signature   = 'modules:make:module ' .
+    protected $signature   = 'modularize:make:module ' .
         '{--module=} {--name=} {--controller} {--config} {--confirm}';
     
     protected $description = 'Make a module';

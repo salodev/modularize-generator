@@ -9,7 +9,7 @@ use function app;
 
 class ListMigrations extends Command
 {
-    protected $signature   = 'modules:list:migrations';
+    protected $signature   = 'modularize:list:migrations';
     protected $description = 'List all migrations';
     
     public function handle()

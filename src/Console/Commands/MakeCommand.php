@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class MakeCommand extends Command
 {
-    protected $signature   = 'modules:make:command {--module=} {--name=}';
+    protected $signature   = 'modularize:make:command {--module=} {--name=}';
     protected $description = 'Make a module command';
     
     public function handle()

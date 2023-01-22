@@ -8,7 +8,7 @@ use ReflectionClass;
 
 class AddSchedule extends Command
 {
-    protected $signature = 'modules:add:schedule ' .
+    protected $signature = 'modularize:add:schedule ' .
         '{--module=} {--command-name=} {--generate-command}';
     
     protected $description = 'Add a sheduled command';
@@ -52,7 +52,7 @@ class AddSchedule extends Command
     
     private function generateCommand(string $key, string $name): void
     {
-        Artisan::call("modules:make:command", [
+        Artisan::call(MakeCommand::class, [
             '--module' => $key,
             '--name'   => $name,
         ]);

@@ -6,7 +6,7 @@ use Salodev\Modularize\Generator\Repository;
 
 class ListModules extends Command
 {
-    protected $signature   = 'modules:list:modules';
+    protected $signature   = 'modularize:list:modules';
     protected $description = 'List all modules';
     
     public function handle()
