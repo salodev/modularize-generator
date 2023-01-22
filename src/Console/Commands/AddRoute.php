@@ -11,7 +11,7 @@ use ReflectionClass;
 
 class AddRoute extends Command
 {
-    protected $signature   = 'modules:add:route {--module=} {--type=} {--verb=} {--uri=} {--action-name=} {--resource-name=}';
+    protected $signature   = 'modularize:add:route {--module=} {--type=} {--verb=} {--uri=} {--action-name=} {--resource-name=}';
     protected $description = 'Add a module route';
     
     public function handle()

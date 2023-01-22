@@ -11,7 +11,7 @@ use Salodev\Modularize\CaseHelper;
 
 class MakeCqrsModule extends Command
 {
-    protected $signature = 'modules:make:cqrs-module ' .
+    protected $signature = 'modularize:make:cqrs-module ' .
         '{--module=} {--name=} {--modelName=} {--confirm}';
     
     protected $description = 'Make a CQRS module';
@@ -87,7 +87,7 @@ class MakeCqrsModule extends Command
         
         $newModuleKey = $key . '.' . CaseHelper::toKebab($name);
         
-        Artisan::call('modules:make:migration', [
+        Artisan::call(MakeMigration::class, [
             '--module'  => $newModuleKey,
             '--name'    => "create_{$tableName}_table",
             '--create'  => $tableName,

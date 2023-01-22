@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class MakeMigration extends Command
 {
-    protected $signature   = 'modules:make:migration {--module=} {--name=} {--create=} {--confirm}';
+    protected $signature   = 'modularize:make:migration {--module=} {--name=} {--create=} {--confirm}';
     protected $description = 'Make a module migration';
     
     public function handle()

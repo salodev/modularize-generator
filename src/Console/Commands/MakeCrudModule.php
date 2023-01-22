@@ -10,7 +10,7 @@ use Salodev\Modularize\Generator\ModuleCodeInjector;
 
 class MakeCrudModule extends Command
 {
-    protected $signature   = 'modules:make:crud-module ' .
+    protected $signature   = 'modularize:make:crud-module ' .
         '{--module=} {--name=} {--modelName=} {--confirm}';
     
     protected $description = 'Make a CRUD module';

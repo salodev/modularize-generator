@@ -6,7 +6,7 @@ use Salodev\Modularize\Generator\CodeGenerator;
 
 class MakeConfig extends Command
 {
-    protected $signature   = 'modules:make:config {--module=}';
+    protected $signature   = 'modularize:make:config {--module=}';
     protected $description = 'Make a module config file';
     
     public function handle()
