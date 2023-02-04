@@ -2,118 +2,143 @@
 
 namespace Salodev\Modularize\Generator\Console\Commands;
 
-use Exception;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use Salodev\Modularize\Generator\CodeGenerator;
-use Salodev\Modularize\Generator\ModuleCodeInjector;
+use Salodev\Modularize\CaseHelper;
+use Salodev\Modularize\Generator\CodeGenerators\ControllerCodeGenerator;
+use Salodev\Modularize\Generator\CodeGenerators\ModuleCodeGenerator;
+use Salodev\Modularize\Generator\Modeller;
 
 class MakeCrudModule extends Command
 {
-    protected $signature   = 'modularize:make:crud-module ' .
-        '{--module=} {--name=} {--modelName=} {--confirm}';
+    protected $signature = 'modularize:make:crud-module ' .
+        '{--module=} ' .
+        '{--name=} ' .
+        '{--modelName=} ' .
+        '{--confirm}';
     
     protected $description = 'Make a CRUD module';
     
-    private $stubParameters = [];
-    
     public function handle()
     {
-        $key       = $this->option('module');
-        $data      = $this->askForModule($key);
+        $moduleIndex = $this->option('module');
+        $data      = $this->askForModule($moduleIndex);
+        $key       = $data['key'];
         $module    = $data['module'];
-        $key       = $data['key'   ];
-        $name      = ucfirst($this->option('name') ??
-            $this->ask('Enter module name'));
+        $optionName = $this->option('name') ?? $this->ask('Enter module name');
+
+        $moduleName = ucfirst($optionName);
+        $childKeyPart = CaseHelper::toKebab($optionName);
         
         $modelName = ucfirst($this->option('modelName') ??
-            $this->ask('Enter a model name', Str::singular($name)));
-        
-        $moduleRootNamespace = $this->getRootNamespace($module);
-        
-        $moduleRootPath    = $module->getRootPath();
-        $pathForModule     = "{$moduleRootPath}/{$name}/{$name}Module.php";
-        $pathForController = "{$moduleRootPath}/{$name}/{$name}Controller.php";
-        $pathForModel      = "{$moduleRootPath}/{$name}/Models/{$modelName}.php";
-        $targetNamespace   = "{$moduleRootNamespace}\\{$name}";
-        $namespaceForModel = "{$moduleRootNamespace}\\{$name}\\Models";
-        $targetClass       = "{$name}Module";
-        $routeResourceName = $this->toKebabCase($modelName);
-        
-        $this->stubParameters = [
-            '{{namespace}}'      => $targetNamespace,
-            '{{name}}'           => $name,
-            '{{modelShortName}}' => $modelName,
-        ];
-        
-        $this->generateCode('/stubs/crud/module.stub', $pathForModule, [
-            '{{routeResourceName}}' => $routeResourceName,
-        ]);
-        $this->generateCode('/stubs/crud/controller.stub', $pathForController, [
-            '{{modelName}}' => $modelName,
-            '{{routeResourceName}}' => Str::singular($routeResourceName),
-            '{{resourceName}}' => "{$modelName}Resource",
-        ]);
-        $this->generateCode('/stubs/all/Models/model.stub', $pathForModel, [
-            '{{namespace}}' => $namespaceForModel,
-            '{{name}}'      => $modelName,
-        ]);
-        
-        $this->generateCode(
-            "/stubs/all/Requests/CreateRequest.stub",
-            "{$moduleRootPath}/{$name}/Requests/CreateRequest.php"
-        );
-        $this->generateCode(
-            "/stubs/all/Requests/UpdateRequest.stub",
-            "{$moduleRootPath}/{$name}/Requests/UpdateRequest.php"
-        );
-        
-        $this->generateCode(
-            "/stubs/all/Resources/resource.stub",
-            "{$moduleRootPath}/{$name}/Resources/{$modelName}Resource.php"
-        );
-        
-        
-        $injector = new ModuleCodeInjector($module);
-        $targetModuleClass = "\\{$targetNamespace}\\{$targetClass}";
-        if ($injector->hasMethod('register')) {
-            $injector->appendCodeToMethod(
-                'register',
-                "\t\$this->provide({$targetModuleClass}::class);\n\t"
-            );
-        } else {
-            $injector->appendRegisterMethod($targetModuleClass);
-        }
+            $this->ask('Enter a model name', Str::singular($moduleName)));
 
-        $childModule = $module->provide("\\{$targetNamespace}\\{$targetClass}");
+        $childKey  = "{$key}.{$childKeyPart}";
+        $modeller = Modeller::fromNewModule($module, $moduleName);
+
+        $moduleCodeGenerator = new ModuleCodeGenerator($modeller);
+        
+        $this->line('Creating module class file...');
+        Artisan::call(MakeModule::class, [
+            '--module' => $key,
+            '--name'   => $moduleName,
+        ]);
+        
+        echo "Providing: {$modeller->moduleClassName}\n";
+        echo require_once($modeller->modulePath);
+        $childModule = $module->provide($modeller->moduleClassName);
+        
+        $this->line('Creating controller class file...');
+        Artisan::call(MakeController::class, [
+            '--module' => $childKey,
+            '--name'   => $modeller->controllerClassBaseName,
+            '--confirm' => true,
+        ]);
+        
+        $this->line('Creating request class file for Create action...');
+        Artisan::call(MakeRequest::class, [
+            '--module' => $childKey,
+            '--name'   => 'Create',
+        ]);
+        
+        $this->line('Creating request class file for Update action...');
+        Artisan::call(MakeRequest::class, [
+            '--module' => $key,
+            '--name'   => 'Update',
+        ]);
+        
+        $this->line('Creating model class file...');
+        Artisan::call(MakeModel::class, [
+            '--module' => $childKey,
+            '--name' => $modelName,
+        ]);
+        
+        $this->line('Creating resource class file...');
+        Artisan::call(MakeResource::class, [
+            '--module' => $childKey,
+            '--name' => $modelName,
+        ]);
+        
+        
+        $this->line('Adding routes to new module...');
+        $moduleCodeGenerator->addCrudRoutes('api', $module);
+        
+        $this->addControllerMethods();
+
+        $this->line('Registering new module...');
         
         $tableName = lcfirst($modelName);
         
+        $this->line('Creationg a migration file...');
         Artisan::call(MakeMigration::class, [
             '--module'  => $childModule::getKey(),
             '--name'    => "create_{$tableName}_table",
             '--create'  => $tableName,
-            '--confirm' => true,
         ]);
     }
     
-    public function generateCode(
-        string $stubPath,
-        string $targetPath,
-        array $parameters = []
-    ) {
-        try {
-            $generator = new CodeGenerator(__DIR__ . $stubPath);
-            $generator->generate(
-                $targetPath,
-                array_merge(
-                    $this->stubParameters,
-                    $parameters
-                )
-            );
-        } catch (Exception $e) {
-            $this->error($e->getMessage());
-            die(1);
-        }
+    private function addControllerMethods(Modeller $modeller) {
+        
+        $codeGenerator = new ControllerCodeGenerator($modeller->controllerPath);
+        $codeGenerator->addMethod('index', [
+            'request' => [
+                'type' => 'Illuminate\Http\Request',
+            ],
+        ]);
+        
+        $codeGenerator->addMethod('show', [
+            'request' => [
+                'type' => 'Illuminate\Http\Request',
+            ],
+            $modeller->resourceUriName => [
+                'type' => $modeller->resourceClassName,
+            ]
+        ]);
+        
+        $codeGenerator->addRoute('store', [
+            'request' => [
+                'type' => "{$modeller->requestNamespace}\\CreateRequest",
+            ]
+        ]);
+        
+        $codeGenerator->addRoute('update', [
+            'request' => [
+                'type' => "{$modeller->requestNamespace}\\CreateUpdate",
+            ],
+            $modeller->resourceUriName => [
+                'type' => $modeller->resourceClassName,
+            ]
+        ]);
+        
+        $codeGenerator->addRoute('destroy', [
+            'request' => [
+                'type' => "{$modeller->requestNamespace}\\CreateUpdate",
+            ],
+            $modeller->resourceUriName => [
+                'type' => $modeller->resourceClassName,
+            ]
+        ]);
+        
     }
+    
 }

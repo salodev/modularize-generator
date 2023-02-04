@@ -3,39 +3,31 @@
 namespace Salodev\Modularize\Generator\Console\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Salodev\Modularize\Generator\Modeller;
 
 class MakeMigration extends Command
 {
-    protected $signature   = 'modularize:make:migration {--module=} {--name=} {--create=} {--confirm}';
+    protected $signature   = 'modularize:make:migration {--module=} {--name=} {--create=}';
     protected $description = 'Make a module migration';
     
     public function handle()
     {
-        $key      = $this->option('module', null);
+        $optionIndex = $this->option('module', null);
+        $data     = $this->askForModule($optionIndex);
+        $module   = $data['module'];
         $name     = $this->option('name', null);
-        $create   = $this->option('create', null);
-        $confirm  = $this->option('confirm', false);
-        
-        
-        $data         = $this->askForModule($key);
-        
-        $module       = $data['module'];
-        $rootPath     = $module->getRootPath();
-        $relativePath = $this->substractPath($rootPath, base_path());
-        $basePath     = $relativePath . DIRECTORY_SEPARATOR . 'Migrations';
-        $name         = $name ?? $this->ask("Migration name in {$basePath}");
-        $fileName     = $basePath . DIRECTORY_SEPARATOR . $name . '.php';
-        
-        $confirm = $confirm ? $confirm : $this->confirm("Your migration will be placed in: '{$fileName}', create now?");
-        
-        if (!$confirm) {
-            $this->line("No changes made");
-            return 0;
+        if (!$name) {
+            $name = $this->ask('Migration name', null);
         }
+        if (!$name) {
+            $this->error('Must specify a name');
+        }
+        $modeller = Modeller::fromModule($module);
+        $create   = $this->option('create', null);
         
         $options = [
             'name'   => $name,
-            '--path' => "{$basePath}",
+            '--path' => "{$modeller->getBasePath($modeller->moduleRootPath)}/Migrations",
         ];
         
         if ($create) {

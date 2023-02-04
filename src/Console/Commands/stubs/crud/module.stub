@@ -9,7 +9,7 @@ class {{name}}Module extends Module
     
     public function getRoutePrefixForCurrent(): string {
         return '';
-    }
+}
     
     public function bootApiRoutes() {
 

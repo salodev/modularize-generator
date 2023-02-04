@@ -1,2 +1,0 @@
-        $response = $this->business->__METHOD_NAME__(__URI_PARAMS__);
-        return new __RESOURCE_CLASS_NAME__($response);

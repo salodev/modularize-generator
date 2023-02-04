@@ -1,0 +1,5 @@
+        $this->router()->get('', [ArticlesController::class, 'index']);
+        $this->router()->post('', [ArticlesController::class, 'store']);
+        $this->router()->get('{{routeResourceName}}', [ArticlesController::class, 'show']);
+        $this->router()->addRoute(['PUT', 'PATCH'], '{{routeResourceName}}', [ArticlesController::class, 'update']);
+        $this->router()->delete('{{routeResourceName}}', [ArticlesController::class, 'destroy']);

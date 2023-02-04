@@ -11,7 +11,6 @@ use Salodev\Modularize\Generator\Console\Commands\MakeCommand;
 use Salodev\Modularize\Generator\Console\Commands\MakeConfig;
 use Salodev\Modularize\Generator\Console\Commands\MakeController;
 use Salodev\Modularize\Generator\Console\Commands\MakeCrudModule;
-use Salodev\Modularize\Generator\Console\Commands\MakeCqrsModule;
 use Salodev\Modularize\Generator\Console\Commands\MakeMail;
 use Salodev\Modularize\Generator\Console\Commands\MakeMigration;
 use Salodev\Modularize\Generator\Console\Commands\MakeModel;
@@ -33,7 +32,6 @@ class ServiceProvider extends Base
             MakeConfig     :: class,
             MakeController :: class,
             MakeCrudModule :: class,
-            MakeCqrsModule :: class,
             MakeMail       :: class,
             MakeMigration  :: class,
             MakeModel      :: class,
