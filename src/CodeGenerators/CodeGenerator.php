@@ -28,7 +28,8 @@ class CodeGenerator
         return $this->parsedFile;
     }
     
-    public function getNewFile(): PhpFile {
+    public function getNewFile(): PhpFile
+    {
         if (!$this->parsedFile) {
             $this->parsedFile = new PhpFile();
         }
@@ -36,16 +37,18 @@ class CodeGenerator
         return $this->parsedFile;
     }
     
-    public function withFile(): PhpFile {
+    public function withFile(): PhpFile
+    {
         if (!file_exists($this->pathToFile)) {
-            $this->parsedFile = new PhpFile;
+            $this->parsedFile = new PhpFile();
             return $this->parsedFile;
         } else {
             return $this->getParsedFile();
         }
     }
     
-    public function getNewClass(): Classtype {
+    public function getNewClass(): Classtype
+    {
         if (!$this->parsedClass) {
             $this->parsedClass = new ClassType();
         }
@@ -112,8 +115,8 @@ class CodeGenerator
         }
         
         file_put_contents(
-            $this->pathToFile, 
-            (string) $this->getParsedFile(), 
+            $this->pathToFile,
+            (string) $this->getParsedFile(),
             FILE_IGNORE_NEW_LINES
         );
     }

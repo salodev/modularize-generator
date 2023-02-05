@@ -6,8 +6,8 @@ use Illuminate\Support\Str;
 use Salodev\Modularize\CaseHelper;
 use Salodev\Modularize\Module;
 
-class Modeller {
-    
+class Modeller
+{
     public readonly string $modulePath;
     public readonly string $moduleRootPath;
     public readonly string $moduleName;
@@ -27,8 +27,12 @@ class Modeller {
     public readonly string $resourceClassName;
     public readonly string $resourceClassBaseName;
     public readonly string $resourcePath;
+    public readonly string $requestNamespace;
+    public readonly string $commandNamespace;
+    public readonly string $commandRootPath;
     
-    public function __construct(string $modulePath, ?string $modelName = null) {
+    public function __construct(string $modulePath, ?string $modelName = null)
+    {
         $this->modulePath              = $modulePath;
         $this->moduleRootPath          = dirname($modulePath);
         $this->moduleName              = basename($modulePath, 'Module.php');
@@ -40,7 +44,7 @@ class Modeller {
         $this->controllerPath          = "{$this->moduleRootPath}/{$this->controllerClassBaseName}.php";
         
         $this->modelName = $modelName === null
-            ? Str::singular($this->moduleName) 
+            ? Str::singular($this->moduleName)
             : Str::singular($modelName);
         
         $this->modelClassBaseName = $this->modelName;
@@ -52,33 +56,42 @@ class Modeller {
         $this->resourceUriName = CaseHelper::toKebab($this->resourceName);
         $this->resourceClassName = "{$this->moduleNamespace}\\{$this->resourceName}Resource";
         $this->resourceClassBaseName = "{$this->resourceName}Resource";
-        $this->resourcePath = "{$this->moduleRootPath}/Resources/{$this->resourceClassBaseName}.php";
+        $this->resourceRootPath = "{$this->moduleRootPath}/Resources";
+        $this->resourcePath = "{$this->resourceRootPath}/{$this->resourceClassBaseName}.php";
+        
+        $this->requestNamespace = "{$this->moduleNamespace}\\Requests";
+        $this->commandNamespace = "{$this->moduleNamespace}\\Commands";
+        $this->commandRootPath = "{$this->moduleRootPath}/Commands";
     }
     
-    public static function fromNewModule(Module $parentModule, string $name, ?string $modelName = null): static {
+    public static function forNewModule(Module $parentModule, string $name, ?string $modelName = null): static
+    {
         $moduleRootPath    = $parentModule->getRootPath();
         $pathForModule     = "{$moduleRootPath}/{$name}/{$name}Module.php";
         return new static($pathForModule, $modelName);
     }
     
-    public static function fromModule(Module $module, ?string $modelName = null): static {
+    public static function fromModule(Module $module, ?string $modelName = null): static
+    {
         $fileName = (new \ReflectionClass($module))->getFileName();
         return new static($fileName, $modelName);
     }
     
-    public function getControllerClassName(string $type): string {
+    public function getControllerClassName(string $type): string
+    {
         return strtolower($type) === 'web'
             ? $this->controllerWebClassName
             : $this->controllerApiClassName;
     }
     
-    protected function getNamespaceFromPath(string $path): string {
+    protected function getNamespaceFromPath(string $path): string
+    {
         $basePath = base_path();
         $basePathLength = strlen($basePath);
         if (substr($path, -4) === '.php') {
-            $step = substr(dirname($path), $basePathLength+1);
+            $step = substr(dirname($path), $basePathLength + 1);
         } else {
-            $step = substr($path, $basePathLength+1);
+            $step = substr($path, $basePathLength + 1);
         }
         $step = ucfirst($step);
         $step = str_replace(DIRECTORY_SEPARATOR, '\\', $step);
@@ -86,7 +99,8 @@ class Modeller {
         return $step;
     }
     
-    public function getBasePath(string $fullPath): string {
+    public function getBasePath(string $fullPath): string
+    {
         $basePath = base_path();
         $basePathLength = strlen($basePath);
         return substr($fullPath, $basePathLength);

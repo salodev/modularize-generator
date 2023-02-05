@@ -1,6 +1,6 @@
 <?php
 
-namespace Salodev\Modularize\Generator\Console\Commands;
+namespace Salodev\Modularize\Generator\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Salodev\Modularize\Generator\Modeller;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Salodev\Modularize\Generator\Console\Commands;
+namespace Salodev\Modularize\Generator\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -11,7 +11,15 @@ use Salodev\Modularize\Generator\Modeller;
 
 class AddRoute extends Command
 {
-    protected $signature   = 'modularize:add:route {--module=} {--verb=} {--uri=} {--method-name=} {--resource-name=}';
+    protected $signature   = <<<EOF
+        modularize:add:route 
+            {--module=} 
+            {--verb=} 
+            {--uri=}
+            {--method-name=}
+            {--resource-name=}
+    EOF;
+    
     protected $description = 'Add a module route';
     
     public function handle()
@@ -20,12 +28,11 @@ class AddRoute extends Command
         $optionIndex  = $this->option('module');
         $data         = $this->askForModule($optionIndex);
         $module       = $data['module'];
-        $defaultResourceName = Str::singular($module->getName());
         $key          = $data['key'   ];
         $httpVerb     = $this->option('verb') ?? $this->choice('Http verb', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
         $uri          = $this->option('uri') ?? $this->ask("Uri for {$httpVerb}", '');
-        
-        $methodName = $this->option('method-name');
+        $methodName   = $this->option('method-name');
+        $defaultResourceName = Str::singular($module->getName());
         
         if (!$methodName) {
             $defaultMethodName = $this->getInferredMethodNameForUri($uri);
@@ -47,21 +54,29 @@ class AddRoute extends Command
         $moduleCodeGenerator->enableLineBreaks();
         $moduleCodeGenerator->addRoute('api', strtolower($httpVerb), $uri, $methodName);
         
-        $controllerCodeGenerator = new ControllerCodeGenerator($modeller->controllerPath);
-        
-        $paramsMap = [
-            'request' => [
-                'type' => \Illuminate\Http\Request::class,
-            ]
-        ];
-        
-        foreach($uriParams as $paramName) {
-            $paramsMap['$paramName'] = [];
+        if (!file_exists($modeller->controllerPath)) {
+            $question = "Controller file '{$modeller->controllerPath}' does not exists for module. Continue anyway?";
+            if (!$this->confirm($question)) {
+                return 0;
+            }
         }
         
-        print_r($paramsMap);
+        if (file_exists($modeller->controllerPath)) {
         
-        $controllerCodeGenerator->addMethod($methodName, $paramsMap);
+            $controllerCodeGenerator = new ControllerCodeGenerator($modeller->controllerPath);
+
+            $paramsMap = [
+                'request' => [
+                    'type' => \Illuminate\Http\Request::class,
+                ]
+            ];
+
+            foreach ($uriParams as $paramName) {
+                $paramsMap[$paramName] = [];
+            }
+
+            $controllerCodeGenerator->addMethod($methodName, $paramsMap);
+        }
         
         $this->createResource($key, $resourceName);
         

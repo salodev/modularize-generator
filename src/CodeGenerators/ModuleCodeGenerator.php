@@ -15,19 +15,23 @@ class ModuleCodeGenerator
         $this->codeGenerator = new CodeGenerator($this->modeller->modulePath);
     }
     
-    static public function fromModule(Module $module, ?string $modelName = null) {
+    public static function fromModule(Module $module, ?string $modelName = null): self
+    {
         return new static(Modeller::fromModule($module, $modelName));
     }
     
-    public function disableLineBreaks(): void {
+    public function disableLineBreaks(): void
+    {
         $this->useLineBreaks = false;
     }
     
-    public function enableLineBreaks(): void {
+    public function enableLineBreaks(): void
+    {
         $this->useLineBreaks = true;
     }
     
-    public function makeEmptyModule() {
+    public function makeEmptyModule()
+    {
         $namespace = $this->modeller->moduleNamespace;
         $file = $this->codeGenerator->withFile();
         $file->addClass($this->modeller->moduleClassName);
@@ -37,10 +41,10 @@ class ModuleCodeGenerator
         $class = $this->codeGenerator->getParsedClass();
         $class->addExtend('\Salodev\Modularize\Module');
         $this->codeGenerator->updateFile();
-        
     }
     
-    public function addCrudRoutes(string $type, ?Module $parentModule = null) {
+    public function addCrudRoutes(string $type, ?Module $parentModule = null)
+    {
         $uri = $this->modeller->resourceUriName;
         $this->disableLineBreaks();
         $this->addRoute($type, 'get', '', 'index');
@@ -54,10 +58,10 @@ class ModuleCodeGenerator
         }
         
         $this->codeGenerator->updateFile();
-        
     }
     
-    public function addRoute(string $type, string $httpMethodName, string $uri, string $controllerMethodName) {
+    public function addRoute(string $type, string $httpMethodName, string $uri, string $controllerMethodName)
+    {
         
         $controllerClassName = $this->modeller->controllerClassName;
         
@@ -74,25 +78,40 @@ class ModuleCodeGenerator
         $this->codeGenerator->updateFile();
     }
     
-    protected function getLineBreak(): string {
+    public function addScheduledCommand(string $commandClassName)
+    {
+        $method = $this->codeGenerator->withMethod('bootSchedule');
+        $code = "\$this->scheduler()" .
+            "->command({$commandClassName}::class)" .
+            "->dailyAt('00:00');\n";
+            
+        $method->addBody($this->getLineBreak() . $code);
+        $this->codeGenerator->updateFile();
+    }
+    
+    protected function getLineBreak(): string
+    {
         return $this->useLineBreaks ? "\n" : '';
     }
     
-    public function checkAddRoutePrefix(Module $parentModule) {
+    public function checkAddRoutePrefix(Module $parentModule)
+    {
         $modeller = Modeller::fromModule($parentModule);
         if (file_exists($modeller->resourcePath)) {
             $this->addRoutePrefix($modeller->resourceUriName);
         }
     }
     
-    public function addRoutePrefix(string $resourceUriName) {
+    public function addRoutePrefix(string $resourceUriName)
+    {
         $class = $this->codeGenerator->getParsedClass();
         $property = $class->addProperty('apiRoutesPrefix', "{{$resourceUriName}}");
         $property->setPublic();
         $property->setType('string');
     }
     
-    public function addSubModule(string $className, $classBaseName) {
+    public function addSubModule(string $className)
+    {
         $method = $this->codeGenerator->withMethod('register');
         $method->addBody("\n\$this->provide(\\{$className}::class);");
         $this->codeGenerator->updateFile();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Salodev\Modularize\Generator\Console\Commands;
+namespace Salodev\Modularize\Generator\Commands;
 
 use CaseHelper\CaseHelperFactory;
 use Illuminate\Console\Command as Base;

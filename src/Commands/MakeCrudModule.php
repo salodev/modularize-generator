@@ -1,6 +1,6 @@
 <?php
 
-namespace Salodev\Modularize\Generator\Console\Commands;
+namespace Salodev\Modularize\Generator\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -34,7 +34,7 @@ class MakeCrudModule extends Command
             $this->ask('Enter a model name', Str::singular($moduleName)));
 
         $childKey  = "{$key}.{$childKeyPart}";
-        $modeller = Modeller::fromNewModule($module, $moduleName);
+        $modeller = Modeller::forNewModule($module, $moduleName);
 
         $moduleCodeGenerator = new ModuleCodeGenerator($modeller);
         
@@ -44,8 +44,7 @@ class MakeCrudModule extends Command
             '--name'   => $moduleName,
         ]);
         
-        echo "Providing: {$modeller->moduleClassName}\n";
-        echo require_once($modeller->modulePath);
+        require_once($modeller->modulePath);
         $childModule = $module->provide($modeller->moduleClassName);
         
         $this->line('Creating controller class file...');
@@ -63,7 +62,7 @@ class MakeCrudModule extends Command
         
         $this->line('Creating request class file for Update action...');
         Artisan::call(MakeRequest::class, [
-            '--module' => $key,
+            '--module' => $childKey,
             '--name'   => 'Update',
         ]);
         
@@ -83,7 +82,7 @@ class MakeCrudModule extends Command
         $this->line('Adding routes to new module...');
         $moduleCodeGenerator->addCrudRoutes('api', $module);
         
-        $this->addControllerMethods();
+        $this->addControllerMethods($modeller);
 
         $this->line('Registering new module...');
         
@@ -97,48 +96,47 @@ class MakeCrudModule extends Command
         ]);
     }
     
-    private function addControllerMethods(Modeller $modeller) {
+    private function addControllerMethods(Modeller $modeller)
+    {
         
         $codeGenerator = new ControllerCodeGenerator($modeller->controllerPath);
         $codeGenerator->addMethod('index', [
             'request' => [
-                'type' => 'Illuminate\Http\Request',
+                'type' => \Illuminate\Http\Request::class,
             ],
         ]);
         
         $codeGenerator->addMethod('show', [
             'request' => [
-                'type' => 'Illuminate\Http\Request',
+                'type' => \Illuminate\Http\Request::class,
             ],
             $modeller->resourceUriName => [
                 'type' => $modeller->resourceClassName,
             ]
         ]);
         
-        $codeGenerator->addRoute('store', [
+        $codeGenerator->addMethod('store', [
             'request' => [
                 'type' => "{$modeller->requestNamespace}\\CreateRequest",
             ]
         ]);
         
-        $codeGenerator->addRoute('update', [
+        $codeGenerator->addMethod('update', [
             'request' => [
-                'type' => "{$modeller->requestNamespace}\\CreateUpdate",
+                'type' => "{$modeller->requestNamespace}\\UpdateRequest",
             ],
             $modeller->resourceUriName => [
                 'type' => $modeller->resourceClassName,
             ]
         ]);
         
-        $codeGenerator->addRoute('destroy', [
+        $codeGenerator->addMethod('destroy', [
             'request' => [
-                'type' => "{$modeller->requestNamespace}\\CreateUpdate",
+                'type' => \Illuminate\Http\Request::class,
             ],
             $modeller->resourceUriName => [
                 'type' => $modeller->resourceClassName,
             ]
         ]);
-        
     }
-    
 }
