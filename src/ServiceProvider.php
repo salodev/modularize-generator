@@ -3,21 +3,20 @@
 namespace Salodev\Modularize\Generator;
 
 use Illuminate\Support\ServiceProvider as Base;
-use Salodev\Modularize\Generator\Console\Commands\AddRoute;
-use Salodev\Modularize\Generator\Console\Commands\AddSchedule;
-use Salodev\Modularize\Generator\Console\Commands\ListMigrations;
-use Salodev\Modularize\Generator\Console\Commands\ListModules;
-use Salodev\Modularize\Generator\Console\Commands\MakeCommand;
-use Salodev\Modularize\Generator\Console\Commands\MakeConfig;
-use Salodev\Modularize\Generator\Console\Commands\MakeController;
-use Salodev\Modularize\Generator\Console\Commands\MakeCrudModule;
-use Salodev\Modularize\Generator\Console\Commands\MakeCqrsModule;
-use Salodev\Modularize\Generator\Console\Commands\MakeMail;
-use Salodev\Modularize\Generator\Console\Commands\MakeMigration;
-use Salodev\Modularize\Generator\Console\Commands\MakeModel;
-use Salodev\Modularize\Generator\Console\Commands\MakeModule;
-use Salodev\Modularize\Generator\Console\Commands\MakeRequest;
-use Salodev\Modularize\Generator\Console\Commands\MakeResource;
+use Salodev\Modularize\Generator\Commands\AddRoute;
+use Salodev\Modularize\Generator\Commands\AddSchedule;
+use Salodev\Modularize\Generator\Commands\ListMigrations;
+use Salodev\Modularize\Generator\Commands\ListModules;
+use Salodev\Modularize\Generator\Commands\MakeCommand;
+use Salodev\Modularize\Generator\Commands\MakeConfig;
+use Salodev\Modularize\Generator\Commands\MakeController;
+use Salodev\Modularize\Generator\Commands\MakeCrudModule;
+use Salodev\Modularize\Generator\Commands\MakeMail;
+use Salodev\Modularize\Generator\Commands\MakeMigration;
+use Salodev\Modularize\Generator\Commands\MakeModel;
+use Salodev\Modularize\Generator\Commands\MakeModule;
+use Salodev\Modularize\Generator\Commands\MakeRequest;
+use Salodev\Modularize\Generator\Commands\MakeResource;
 
 class ServiceProvider extends Base
 {
@@ -33,7 +32,6 @@ class ServiceProvider extends Base
             MakeConfig     :: class,
             MakeController :: class,
             MakeCrudModule :: class,
-            MakeCqrsModule :: class,
             MakeMail       :: class,
             MakeMigration  :: class,
             MakeModel      :: class,

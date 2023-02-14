@@ -11,8 +11,18 @@
     "type": "library",
     "require": {
         "laravel/framework": "^8|^9",
-        "marcusball/case-helper": "0.1.0"
+        "marcusball/case-helper": "0.1.0",
+        "nette/php-generator": "v3.6.x-dev"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/home/salomon/dev/salo/modularize",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Salodev\\Modularize\\Generator\\": "src/"
@@ -27,6 +37,7 @@
         }   
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "4.0.x-dev"
+        "squizlabs/php_codesniffer": "4.0.x-dev",
+        "salodev/modularize": "dev-master"
     }
 }

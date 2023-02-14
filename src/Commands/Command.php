@@ -1,22 +1,17 @@
 <?php
 
-namespace Salodev\Modularize\Generator\Console\Commands;
+namespace Salodev\Modularize\Generator\Commands;
 
 use CaseHelper\CaseHelperFactory;
 use Illuminate\Console\Command as Base;
-use Salodev\Modularize\Module;
 use Salodev\Modularize\Generator\Repository;
+use Salodev\Modularize\Module;
 
 class Command extends Base
 {
     protected function getRootNamespace(Module $module)
     {
-        $className = get_class($module);
-        $step1     = str_replace('\\', DIRECTORY_SEPARATOR, $className);
-        $step2     = dirname($step1);
-        $step3     = str_replace(DIRECTORY_SEPARATOR, '\\', $step2);
-        
-        return $step3;
+        return $module->getRootNamespace();
     }
     
     protected function toKebabCase(string $string): string
