@@ -9,9 +9,11 @@ class ModuleCodeGenerator
 {
     protected CodeGenerator $codeGenerator;
     protected bool $useLineBreaks = true;
+    protected Modeller $modeller;
 
-    public function __construct(protected Modeller $modeller)
+    public function __construct(Modeller $modeller)
     {
+        $this->modeller = $modeller;
         $this->codeGenerator = new CodeGenerator($this->modeller->modulePath);
     }
     
