@@ -12,7 +12,7 @@
     "require": {
         "laravel/framework": "^8|^9",
         "marcusball/case-helper": "0.1.0",
-        "nette/php-generator": "v3.6.9"
+        "nette/php-generator": "v3.5"
     },
     "autoload": {
         "psr-4": {
