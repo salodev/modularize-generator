@@ -12,17 +12,8 @@
     "require": {
         "laravel/framework": "^8|^9",
         "marcusball/case-helper": "0.1.0",
-        "nette/php-generator": "v3.6.x-dev"
+        "nette/php-generator": "v3.6"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/home/salomon/dev/salo/modularize",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Salodev\\Modularize\\Generator\\": "src/"
